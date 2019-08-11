@@ -6,10 +6,19 @@
     <description>Recent content in 图像检测 on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Mon, 05 Aug 2019 20:43:49 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 11 Aug 2019 21:08:17 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/tags/%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8B/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Fast RCNN</title>
+      <link>https://imurphl.github.io/post/fast-rcnn/</link>
+      <pubDate>Sun, 11 Aug 2019 21:08:17 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/fast-rcnn/</guid>
+      <description>1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这</description>
+    </item>
     
     <item>
       <title>RCNN: Regions with CNN features</title>

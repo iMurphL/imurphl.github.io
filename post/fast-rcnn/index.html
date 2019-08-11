@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Fast RCNN - Ling - Stay hungry. Stay foolish.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="ling" /><meta name="description" content="1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.3 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://imurphl.github.io/post/fast-rcnn/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Fast RCNN" />
+<meta property="og:description" content="1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://imurphl.github.io/post/fast-rcnn/" />
+<meta property="article:published_time" content="2019-08-11T21:08:17+08:00" />
+<meta property="article:modified_time" content="2019-08-11T21:08:17+08:00" />
+<meta itemprop="name" content="Fast RCNN">
+<meta itemprop="description" content="1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这">
+
+
+<meta itemprop="datePublished" content="2019-08-11T21:08:17&#43;08:00" />
+<meta itemprop="dateModified" content="2019-08-11T21:08:17&#43;08:00" />
+<meta itemprop="wordCount" content="5661">
+
+
+
+<meta itemprop="keywords" content="图像检测," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Fast RCNN"/>
+<meta name="twitter:description" content="1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">😃</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">😃</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Fast RCNN</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-08-11 </span>
+        
+          <span class="more-meta"> 约 5661 字 </span>
+          <span class="more-meta"> 预计阅读 12 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-introduction">1. Introduction</a>
+<ul>
+<li><a href="#1-1-rcnn-and-sppnet">1.1 RCNN and SPPnet</a></li>
+<li><a href="#1-2-contributions">1.2 Contributions</a></li>
+</ul></li>
+<li><a href="#2-fast-rcnn-architecture-and-training">2. Fast RCNN architecture and training</a>
+<ul>
+<li><a href="#2-1-the-roi-pooling-layer">2.1 The RoI pooling layer</a></li>
+<li><a href="#2-2-initializing-from-pre-trained-networks">2.2 Initializing from pre-trained networks</a></li>
+<li><a href="#2-3-fine-tuning-for-detection">2.3 Fine-tuning for detection</a></li>
+<li><a href="#2-4-scale-invariance">2.4 Scale invariance</a></li>
+</ul></li>
+<li><a href="#3-fast-rcnn-detection">3. Fast RCNN detection</a>
+<ul>
+<li><a href="#3-1-truncated-svd-for-faster-detection">3.1 Truncated SVD for faster detection</a></li>
+</ul></li>
+<li><a href="#4-main-results">4. Main results</a>
+<ul>
+<li><a href="#4-4-training-and-testing-time">4.4 Training and testing time</a></li>
+<li><a href="#4-5-which-layers-to-fine-tune">4.5 Which layers to fine-tune?</a></li>
+</ul></li>
+<li><a href="#个人笔记">个人笔记</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<p>目标检测有两个主要挑战：</p>
+
+<ol>
+<li>需要处理大量的候选物体位置（通常称为proposal）。</li>
+<li>这些候选框只提供了粗糙的位置，需要修正以实现精确定位。</li>
+</ol>
+
+<p>这些问题的解决方案通常需要在速度、精确度或简洁度上妥协。</p>
+
+<p>在本论文中，我们将时下最新的基于卷积网络的物体检测器的训练过程流水线化了。我们提出的一个单步训练算法能联合学习分类物体的proposal并修正它们的空间位置。</p>
+
+<h3 id="1-1-rcnn-and-sppnet">1.1 RCNN and SPPnet</h3>
+
+<p>RCNN的缺点：
+1. 训练是多阶段的：RCNN首先在proposal上用对数损失(log loss)对预训练的ConvNet进行微调，再用CNN特征训练SVM，使SVM代替微调后的softmax分类器，最后训练一个边框回归器。
+2. 训练耗时、耗空间：对于SVM和边框回归器的训练，特征是对每张图片的每个proposal计算并存在硬盘上的。
+3. 物体检测慢：在测试时，特征从每张图片的每个proposal上提取，用VGG16进行检测需要47秒才能处理一张图片</p>
+
+<p>RCNN慢是因为它对每个proposal都进行了一次CNN前向传播，没有使用共享计算。空间金字塔池化网络(SPPnet, Spatial pyramid pooling networks)提出来通过共享技术加速RCNN。SPPnet为整个输入图片计算一个feature map，并基于从共享的feature map提取的proposal的特征向量来进行分类。一个proposal的特征是通过将feature map所属部分池化到固定大小（如$6\times6$）输出得到的。多个不同大小的输出被池化再堆叠(concatenated)，就是SPP。SPPnet为RCNN提速了10~100倍。训练时间也因为更快的proposal特征抽取缩减了3倍。</p>
+
+<p>SPPnet也有其缺点。像RCNN一样，它的训练也有多个阶段，包括抽取特征，用log loss微调网络，训练SVM，最后拟合一个边框回归器，特征也是写入磁盘的。</p>
+
+<h3 id="1-2-contributions">1.2 Contributions</h3>
+
+<p>Fast RCNN方法有如下优点：</p>
+
+<ol>
+<li>比RCNN和SPPnet更高的检测质量(mAP)</li>
+<li>训练是单过程的，使用多任务loss(multi-task loss)</li>
+<li>训练能更新网络中的所有层</li>
+<li>不需要硬盘来缓存特征</li>
+</ol>
+
+<h2 id="2-fast-rcnn-architecture-and-training">2. Fast RCNN architecture and training</h2>
+
+<p>Fast RCNN接收一张图片和一系列proposal作为输入。首先用数个卷积层和池化层处理图片，生成一个feature map。然后RoI池化层为每个proposal从feature map中提取一个固定长度的特征向量。每个特征向量输入到一系列全连接层，最终分为双输出层(sibling output layers)：一个对K类物体和1个背景类的K+1类输出softmax概率，另一层为K类的每个类输出4个实数值，每一组4值都编码<strong>改进后的</strong>K类中的一个边界框位置。</p>
+
+<p><img src="/img/fast-rcnn/fast-rcnn.png" alt="fast-rcnn" /></p>
+
+<h3 id="2-1-the-roi-pooling-layer">2.1 The RoI pooling layer</h3>
+
+<p>RoI池化层使用max pooling来将任意有效RoI中的特征转换为一个有着固定$H\times W$（如$7\times7$）范围的的feature map。其中H和W是超参数，与特定的RoI无关。在本论文中，一个RoI是卷积特征网络的一个矩形窗口。每个RoI用一个四元组$(r,c,h,w)$定义，其中$(r,c)$定义了左上角坐标，$(h,w)$定义了高宽。</p>
+
+<p>RoI池化层工作如下：将$h\times w$的RoI窗口分割为大小约为$h/H\times w/W$的$H\times W$个子窗口，并将每个子窗口的max pooling值输出到输出矩阵的对应位置。像标准max pooling一样，pooing是各channel独立进行的。RoI层是SPPnet中spatial pyramid pooling的特种形式，即只有一个pyramid level。我们使用了SPPnet中提出的pooling subwindow 计算方法。</p>
+
+<h3 id="2-2-initializing-from-pre-trained-networks">2.2 Initializing from pre-trained networks</h3>
+
+<p>我们用了3个在ImageNet上预训练的网络，每个有5个max pooling层和5到13个卷积层。当一个预训练的网络用于Fast RCNN时，有三个变换需要进行：</p>
+
+<ol>
+<li>最后一个max pooling层用RoI池化层代替，设置H和W大小匹配网络的第一个fc层（对于VGG16是$H=W=7$）</li>
+<li>将网络的最后一个fc和softmax层（用于ImageNet的1000类分类的训练）用前面描述过的双输出层代替（一个是针对K+1类的fc加softmax，另一个是针对特定类别的边框回归）</li>
+<li>网络修改为接收两个输入，图片列表和图片中的RoI列表</li>
+</ol>
+
+<h3 id="2-3-fine-tuning-for-detection">2.3 Fine-tuning for detection</h3>
+
+<p>由于SPP反向传播效率极低，我们提出了一个更高效的方法，在训练时共享特征。在Fast RCNN训练过程中，SGD mini batch是分层采样的，首先采样N个图片，并在每个图片采样R/N个RoI。<strong>来自同一图片的RoI在前向和反向过程中很大程度地共享了内存和计算，降低N会降低mini-batch的计算量</strong>。减小N会降低mini batch的计算量，举例来说，当N=2，R=128时，这个训练方法比从128张图片各取一个RoI（即RCNN和SPPnet的方法）快大约64倍。</p>
+
+<blockquote>
+<p>共享了内存能理解，共享计算怎么理解？</p>
+</blockquote>
+
+<p>本方法的顾虑之一是由于来自同一图片的RoI有相互作用，训练收敛可能会很慢。这一顾虑并没有成为实际问题。</p>
+
+<p>除了分层采样，Fast RCNN使用了流线型的训练过程，用一个fine-tuning的步骤联合优化softmax分类器和边框回归器，而不是多步骤分别进行。单步训练的主要几个部分如下：</p>
+
+<p><strong>Multi-task loss</strong> Fast RCNN有双输出层。第一层为每个RoI输出对K+1个类的一个离散概率分布$p=\left(p_{0}, \ldots, p_{K}\right)$。通常，用全连接层输出的K+1维进行softmax计算出$p$。第二层输出边框回归偏移量，$t^{k}=\left(t_{x}^{k}, t_{y}^{k}, t_{w}^{k}, t_{h}^{k}\right)$，k指第k个类别。我们用RCNN中的参数化处理$t^{k}$，<strong>$t^{k}$是一个与proposal相关的的尺度不变性转换(scale-invariant translation)和对数空间的宽高偏移(log space height/width shift)</strong>。</p>
+
+<p>每一个训练的RoI用一个gt的类别u和一个gt边框回归目标v标注。我们用一个多任务损失(multi-task loss)$L$对每一个标注的RoI联合地训练分类和边框回归：</p>
+
+<p>$$
+L\left(p, u, t^{u}, v\right)=L_{cls}(p, u)+\lambda[u \geq 1] L_{loc}\left(t^{u}, v\right) \tag{1}
+$$</p>
+
+<p>其中第一个loss $L_{cls}(p, u)=-\log p_{u}$是对于真实类别类u的log loss。</p>
+
+<p>第二个loss $L_{loc}$是由类别u对应的真实边框回归目标v组成的元组$v=\left(v_{x}, v_{y}, v_{w}, v_{h}\right)$，以及对于类别u的预测值元组$t^{u}=\left(t_{x}^{u}, t_{y}^{u}, t_{w}^{u}, t_{h}^{u}\right)$组成。艾弗森括号指示函数 (Iverson bracket indicator function, 一种中括号标记的函数) $[u≥1]$当$u≥1$取1，否则取0。按照惯例，背景类标记为u=0。因为背景类RoI没有gt的概念，所以可以将$L_{loc}$忽略掉。对于边框回归,我们使用的loss函数是：</p>
+
+<p>$$
+L_{loc}\left(t^{u}, v\right)=\sum_{i \in{x, y, w, h}} \operatorname{smooth}_{L_{1}}\left(t_{i}^{u}-v_{i}\right) \tag{2}
+$$</p>
+
+<p>其中</p>
+
+<p>$$
+\operatorname{smooth}_{L_{1}}(x)=\left\{\begin{array}{ll}{0.5 x^{2},} &amp; {\text { if }|x|&lt;1} \\ {|x|-0.5,} &amp; {\text { otherwise }}\end{array}\right. \tag{3}
+$$</p>
+
+<p>是鲁棒的$L_{1}$ loss，它相比RCNN和SPPnet使用的$L_{2}$ loss，对异常值更不敏感。如果回归目标极大(unbounded)，用$L_{2}$ loss训练需要小心地微调学习率来防止梯度爆炸，等式(3)就消除了这一过敏问题。</p>
+
+<p>等式(1)中的超参数λ控制了两个loss任务之间的平衡。我们将gt回归目标$v_{i}$归一化到零均值和单位方差(zero mean and unit variance),在我们所有实验中λ=1。</p>
+
+<blockquote>
+<p>回归目标，也就是边框坐标和宽高归一化具体怎么实现？</p>
+</blockquote>
+
+<p><strong>Mini-batch sampling</strong> 在微调过程中，每个SGD mini-batch随机地取样N = 2张图片（在实际应用中，我们通常遍历数据集中的排列）。我们使用mini-batches R = 128，从每张图片中采样64个RoI。我们从所有与gt边界框的IoU不少于0.5的RoIs中取了25%。这些RoI都标记了一个前景对象类别，也就是$u\geq 1$。剩余的RoI是从和gt框的最大IoU为[0.1, 0.5)的proposal中采样。这些是背景样本并标注u=0。在训练过程中，图片有0.5的概率水平翻转，没有使用其他的数据增强方法。</p>
+
+<p><strong>Back-propagation through RoI pooling layers</strong> 反向传播沿着RoI池化层的导数传递。为了简洁，我们设定每个mini-batch为一张图片（N = 1），不过扩展到N &gt; 1也很直接，因为前向传播是独立处理每张图片的。</p>
+
+<p>设$x_{i} \in \mathbb{R}$是RoI池化层的第i个激活值输入，$y_{rj}$为第r个RoI的第j个输出。RoI pooling层计算$y_{r j}=x_{i^{<em>}(r, j)}$，其中$i^{</em>}(r, j)=\operatorname{argmax}_{i^{\prime} \in \mathcal{R}(r, j)} x_{i^{\prime}}$。$\mathcal{R}(r, j)$是输出单元$y_{rj}$用于最大池化的子窗口的坐标集(the index set)。一个$x_{i}$可能被分配给多个不同的输出$y_{rj}$。</p>
+
+<p>RoI pooling层的反向传播函数对每个输入$x_{i}$通过argmax开关计算损失函数的偏导：</p>
+
+<p>$$
+\frac{\partial L}{\partial x_{i}}=\sum_{r} \sum_{j}\left[i=i^{*}(r, j)\right] \frac{\partial L}{\partial y_{r j}} \tag{4}
+$$</p>
+
+<p>总之，对于每个mini-batch RoI r和每个pooling输出单元$y_{r j}$ ，偏导$\partial L / \partial y_{r j}$只有在i是通过max pooling选出的让yrj最大时(argmax)才会累积。在反向传播中偏导$\partial L / \partial y_{r j}$已被RoI pooling 层的上一层的反向传播函数(backwards function)计算。</p>
+
+<p><strong>SGD hyper-parameters</strong> 用于softmax分类和边界框回归的全连接层由标准差为0.01和0.001的零均值高斯分布分别初始化。Baises初始化为0。所有图层的每层学习率的weight为1，biases为2，全局学习率为0.001。在训练VOC07和VOC12训练验证集时，我们进行了3万次mini-batch SGD迭代，在调整学习率为0.0001后再训练了1万次。在更大的数据集上训练时，我们会运行更多次迭代。momentum设为0.9，decay设为0.0005。</p>
+
+<h3 id="2-4-scale-invariance">2.4 Scale invariance</h3>
+
+<p>我们探索了两条实现尺度不变性的物体检测的策略：通过蛮力学习(“brute force” learning)和使用图片金字塔。在蛮力法中，每张图片在训练和测试时都处理为预定义的像素大小。网络必须直接从数据中训练出尺度不变性物体检测。</p>
+
+<p>作为对比，多尺度方法通过图片金字塔为网络近似地提供了尺度不变性。在测试时，图片金字塔用于将每个proposal近似地尺度归一化(scale-normalize)。在多尺度训练阶段，我们按照RCNN的方法，为每一个抽样到的图片随机采样一个金字塔尺度，作为数据增强。由于GPU内存限制，我们只在小网络上实验了多尺度训练。</p>
+
+<h2 id="3-fast-rcnn-detection">3. Fast RCNN detection</h2>
+
+<p>一旦Fast RCNN网络微调完成，检测会比前向传播计算量稍大（假设proposal提前计算好了）。网络接收一个图片（或编码为一系列图片的一个图片金字塔）和需要评分的R个object proposal。在测试时, R通常接近2000，未来我们会考虑更大的情况（约4.5万）。使用图片金字塔时，每个RoI使用让它变形后最接近$224^2$像素的scale。</p>
+
+<p>对于每个测试阶段的RoI r，前向传播输出一类后验概率分布p(posterior probability distribution p)和一系列预测的相对于r的边界框偏移量（K类中每类都得到自己的修正后边界框预测）。我们用估计概率$\operatorname{Pr}(\text {class}=k | r) \triangleq p_{k}$来为为每个类别k的r赋值检测置信度。我们再对每一类分别进行非极大值抑制，使用的算法和配置与RCNN一样。</p>
+
+<h3 id="3-1-truncated-svd-for-faster-detection">3.1 Truncated SVD for faster detection</h3>
+
+<p>对于整图分类任务来说，全连接层比卷积层计算所需时间要少。而在需要检测的RoI数量很大时，情况相反，近半数前向传播时间都花在全连接层计算。大的全连接层很容易通过使用截短奇异值分解（truncated SVD, singular vector decomposition）压缩来加速。
+在这个技术中，一层的u∗v权重矩阵W可近似地使用如下SVD因式分解：</p>
+
+<p>$$
+W \approx U \Sigma_{t} V^{T} \tag{5}
+$$</p>
+
+<p>在这个分解中，U是$u∗t$的矩阵，包含了W的前t个左奇异向量，$Σt$是一个长宽为t的对角方阵，包含W的前t个奇异值，V是$t∗v$的矩阵，包含了W的前t个右奇异向量。Truncated SVD将参数量从$uv$降到$t(u+v)$，当t比$min(u,v)$都小得多时，这将很有效。为了压缩网络，W对应的全连接层用两个全连接层代替，其中不包含非线性关系（non-linearity）。第一个矩阵的参数使用$\Sigma_{t} V^{T}$且不包含biases，第二个使用U作为权重，以及原W对应的biases。这一简单的压缩方法在RoI数量大时非常有效。</p>
+
+<h2 id="4-main-results">4. Main results</h2>
+
+<h3 id="4-4-training-and-testing-time">4.4 Training and testing time</h3>
+
+<p>使用截短奇异值分解可以在仅损失很少（0.3%）的mAP且不需在模型压缩后额外微调的前提下，缩短30%的检测时间。</p>
+
+<h3 id="4-5-which-layers-to-fine-tune">4.5 Which layers to fine-tune?</h3>
+
+<p>在较小的网络，我们发现conv1是泛化的且任务无关的（众所周知的事实）。允许conv1学习与否对于mAP没有任何有意义的影响。对于VGG16，我们发现仅有必要更新conv3_1及以上的层（13个卷积层中的9个）
+本论文中所有基于VGG16的FRCN的结果都是从conv3_1开始微调的。</p>
+
+<h2 id="个人笔记">个人笔记</h2>
+
+<ol>
+<li><p>Fast RCNN的改进</p>
+
+<ol>
+<li>卷积不再是重复对每一个region proposal，而是对于整张图像先提取了泛化特征，这样子减少了大量的计算量（注意到，RCNN中对于每一个region proposal做卷积会有很多重复计算）</li>
+<li>RoI池化层的提出，巧妙的解决了尺度放缩的问题</li>
+<li>将regressor放进网络一起训练，同时用softmax代替SVM分类器，更加简单高效</li>
+</ol></li>
+
+<li><p>多尺度输入
+多尺度表示输入图像采用多种尺度输入，在测试的时候发现多尺度虽然能在mAP上得到些许提升但也增加了时间开销（作者给出原因：深度卷积网络可以学习尺度不变性）。</p></li>
+
+<li><p>对SVD的理解
+由于卷积层计算针对的是一整张图片，而全连接层需要对每一个region proposal都作用一次，所以全连接层的计算占网络计算的将近一半，作者采用SVD来简化全连接层计算。</p>
+
+<p><img src="/img/fast-rcnn/svd.jpg" alt="svd" /></p></li>
+</ol>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">ling</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-08-11
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8B/">图像检测</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/rcnn/">
+            <span class="next-text nav-default">RCNN: Regions with CNN features</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:371788386@qq.com" class="iconfont icon-email" title="email"></a>
+  <a href="https://imurphl.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ling</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

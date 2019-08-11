@@ -50,7 +50,7 @@
 
 <meta itemprop="datePublished" content="2019-08-05T20:43:49&#43;08:00" />
 <meta itemprop="dateModified" content="2019-08-05T20:43:49&#43;08:00" />
-<meta itemprop="wordCount" content="5745">
+<meta itemprop="wordCount" content="6285">
 
 
 
@@ -125,8 +125,8 @@
       <div class="post-meta">
         <span class="post-time"> 2019-08-05 </span>
         
-          <span class="more-meta"> 约 5745 字 </span>
-          <span class="more-meta"> 预计阅读 12 分钟 </span>
+          <span class="more-meta"> 约 6285 字 </span>
+          <span class="more-meta"> 预计阅读 13 分钟 </span>
         
       </div>
     </header>
@@ -180,15 +180,29 @@
 <li>如何在一个小规模的数据集上训练能力强劲的网络模型？</li>
 </ol>
 
-<p>不像图像分类，检测需要在图像中定位物体。一种方法是将局部化设计为回归问题，这一策略在实践中进展并不顺利。另一选择是建立一个滑动窗口检测器。但我们的网络单元很多(包括5个卷积层)，有着很大感受野(195*195)和步长(32*32)，这使得精确定位成为一个挑战。</p>
+<p>不像图像分类，检测需要在图像中定位物体。一种方法是将局部化设计为回归问题，这一策略在实践中进展并不顺利。另一选择是建立一个滑动窗口检测器。但我们的网络单元很多(包括5个卷积层)，有着很大感受野($195\times 195$)和步长($32\times 32$)，这使得精确定位成为一个挑战。</p>
 
-<p>我们通过使用“区域识别(recognition using regions)”操作解决了CNN局部化问题，它曾成功于物体检测和语义分割。我们使用了一个简单的技术(仿射变换 affine image warping)来从每个region proposal生成固定大小的CNN的输入，从而无视region形状的不同。</p>
+<blockquote>
+<p>感受野(Receptive Field)：在CNN中，第n层特征图中一个像素，对应输入图像的像素数量，即为该层的Receptive Field，简称RF。</p>
 
-<p>本论文第二大创新点是证明用大辅助数据集(ILSVRC)进行监督预训练，再用小数据集(PASCAL VOC)进行特定领域微调这一方法，在数据不足时能有效地训练一个高容量的CNN。</p>
+<p>感受野怎么计算的？为何不是平方数？</p>
+</blockquote>
 
-<p>我们的系统效率也很高。分类相关的计算是一个相当小的矩阵向量乘积和非极大值抑制(non-maximum suppression)。这一计算量属性是由所有类都共享特征产生的。</p>
+<p>我们通过使用“区域识别(recognition using regions)”操作解决了CNN局部化问题，它曾成功用于物体检测和语义分割。我们使用了一个简单的技术，即仿射图像变换(affine image warping)来从每个region proposal生成固定大小的CNN的输入，从而无视region形状的不同。</p>
 
-<p><img src="/img/rcnn/rcnn.png" alt="R-CNN" /></p>
+<blockquote>
+<p>仿射图像变换：图像拉伸扭曲等空间变换。</p>
+</blockquote>
+
+<p>论文第二大创新点是证明用大辅助数据集(ILSVRC)进行监督预训练，再用小数据集(PASCAL VOC)进行特定领域微调这一方法，在数据不足时能有效地训练一个高容量的CNN。</p>
+
+<p>我们系统的效率也很高，分类相关的计算是一个相当小的矩阵向量乘积和非极大值抑制(non-maximum suppression, nms)，这一计算量属性是由所有类都共享特征产生的。</p>
+
+<blockquote>
+<p>非极大值抑制nms：将概率最大的proposal与其它proposal计算IoU，去除IoU超过阈值的其它proposal，在剩下的proposal里重复此过程，直到找到所有的proposal。</p>
+</blockquote>
+
+<p><img src="/img/rcnn/rcnn.png" alt="rcnn" /></p>
 
 <h2 id="2-object-detections-with-r-cnn">2. Object detections with R-CNN</h2>
 
@@ -197,11 +211,9 @@
 <p>我们的物体检测系统由三个模块组成：</p>
 
 <ol>
-<li>第一个生成类别无关的候选区域(region proposals)
-我们使用selective search实现。</li>
-<li>第二个模块是一个大的卷积神经网络，从每个region中提取固定长度的特征向量(feature extraction)
-我们用Caffe中的AlexNet实现。为了从region proposal中提取特征，我们需要将图片转换为CNN所需的大小(227 * 227)。大小不定的region有多种转换方式，我们选择了最简单的一种，不管其大小和长宽比，我们直接将其拉伸到所需尺寸。在拉伸前，首先在box周围附加了p个像素，也就是人为添加了边框，在这里 p=16。</li>
-<li>第三个模块是特定类别的SVM的集合</li>
+<li>第一个生成类别无关的候选区域(region proposals)。我们使用selective search实现。</li>
+<li>第二个模块是一个大的卷积神经网络，从每个region中提取固定长度的特征向量(feature extraction)。我们用Caffe中的AlexNet实现。为了从region proposal中提取特征，将图片转换为CNN所需的大小(227 * 227)。大小不定的region有多种转换方式，我们选择了最简单的一种，不管其大小和长宽比，直接将其拉伸到所需尺寸。在拉伸前，首先在box周围附加了p个像素，也就是人为添加了边框，论文中p=16。</li>
+<li>第三个模块是每一类别的SVM的集合</li>
 </ol>
 
 <h3 id="2-2-test-time-detection">2.2 Test-time detection</h3>
@@ -217,15 +229,23 @@
 
 <p><strong>Supervised pre-training</strong> 我们在一个大辅助数据集上(ILSVRC Classification 2012)分别地预训练CNN，只有图片级的标注(没有边界框)。</p>
 
-<p><strong>Domain-specific fine-tuning</strong> 为了让我们的CNN适应新的任务(检测)和领域(warped(变形的)VOC windows)。我们只用来自VOC的warped region proposal样本，继续用SGD训练CNN的参数。除了用随机初始化的(N+1)路分类层(N是物体类别数量，1是背景)替换原来的ImageNet 1000路分类层，CNN的结构不变。对于VOC数据集，N=20；对于ILSVRC，N=200。对于输入的region proposals，我们把所有与其的IoU≧0.5的gt所属类认为是正样本，其余的类是负样本。SGD的学习率设置为0.001(预训练初始值的1/10)，让微调能取得进展同时又不完全颠覆其初始态。 在每一次SGD迭代，我们都取32个正样本window(遍及所有类)和96个背景样本window，形成一个128的mini-batch。我们将bias设置得偏向正样本，因为比起背景来它们过于稀少。</p>
+<p><strong>Domain-specific fine-tuning</strong> 为了让CNN适应新的任务(检测)和领域(warped VOC windows, 变形的VOC proposal)。我们只用来自VOC的warped region proposal样本，继续用SGD训练CNN的参数。<strong>除了用随机初始化的N+1路分类层(N是物体类别数量，1是背景)替换原来的ImageNet 1000路分类层，CNN的结构不变</strong>。对于VOC数据集，N=20；对于ILSVRC，N=200。<strong>对于输入的region proposals，把所有与gt的IoU≧0.5的proposal认为是正样本，其余的类是负样本</strong>。SGD的学习率设置为0.001(预训练初始值的1/10)，让微调能取得进展同时又不完全颠覆其初始态。 <strong>在每一次SGD迭代，我们都取32个正样本window(遍及所有类)和96个背景样本window，形成一个128的mini-batch。我们将bias设置得偏向正样本，因为比起背景来它们过于稀少。</strong></p>
 
-<p><strong>Object category classifiers</strong> 我们用IoU(Intersection over Union)阈值来解决重叠问题，低于阈值的被定义为负样本。本文阈值为0.3，是从一个验证集中，对{0，0.1，…，0.5}进行网格搜索(grid search)选出来的。</p>
+<p><strong>Object category classifiers</strong> 我们用IoU阈值来解决重叠问题，低于阈值的proposal被定义为负样本。本文阈值为0.3，是从一个验证集中对{0，0.1，…，0.5}进行网格搜索（grid search）选出来的。</p>
 
-<p>一旦特征抽取出，训练标签打上后，我们开始为每个类优化一个线性SMV。由于训练数据大到无法装入内存，我们采用了标准的hard negative mining方法。Hard negative mining收敛得很快，实际运用中，对所有图片处理一遍后mAP便停止增长了。</p>
+<blockquote>
+<p>IoU(Intersection over Union)：把得到的region proposal与ground truth计算交并比，将IoU大于最高阈值的proposal设为正样本，将IoU小于最低阈值的proposal设为负样本，其余样本忽略。</p>
+</blockquote>
+
+<p>一旦特征抽取出，训练标签打上后，我们开始为每个类别优化一个线性SVM。由于训练数据大到无法装入内存，我们采用了标准的hard negative mining方法。Hard negative mining收敛得很快，实际运用中，对所有图片处理一遍后mAP便停止增长了。</p>
 
 <h2 id="3-visualization-ablation-and-modes-of-error">3. Visualization, ablation, and modes of error</h2>
 
-<p><strong>Performance layer-by-layer, without fine-tuning</strong> 为了理解那一层对检测性能最重要，我们的思路是挑出网络中的一个单元(特征)，把它当做一个物体检测器。也就是在一个大的region proposal集合(1000万)上计算这个单元的激活值，并将regions按激活值从大到小排序，执行非极大值抑制，然后显示得分最高的region。我们的方法通过展示单元激活了哪些region，让它们“为自己说话”。我们可视化了pool5层的单元。</p>
+<blockquote>
+<p>消融实验(ablation experiment)：若提出了一种方案同时改变了多个条件/参数，在接下去的消融实验中，会逐个控制一个条件/参数不变，来观察结果到底是哪个条件/参数对结果的影响更大。</p>
+</blockquote>
+
+<p><strong>Performance layer-by-layer, without fine-tuning</strong> 为了理解那一层对检测性能最重要，我们的思路是挑出网络中的一个单元（特征），把它当做一个物体检测器。也就是在一个大的region proposal集合（1000万）上计算这个单元的激活值，并将regions按激活值从大到小排序，执行非极大值抑制，然后显示得分最高的region。我们的方法通过展示单元激活了哪些region，让它们“为自己说话”。我们可视化了pool5层的单元。</p>
 
 <p>我们分析了网络特征在VOC 2007数据集上最后三层的结果。一层一层的性能分析暴露了fc7的特征比fc6要差。这意味着29%，1680万参数可以从CNN中移除，还不会导致mAP下降。更惊人的是将fc6和fc7都移除也有一个不错的结果，尽管pool5的参数只有整个网络的6%。<strong>CNN的表达能力主要来自其卷积层，而不是更大更密的全连接层</strong>。这一发现说明了对任意大小的图片，只用CNN的卷积层计算一个密集feature map的性能潜力，有点HOG的感觉。pool5 从ImageNet学习到的特征是通用的，提升主要来自于建立在它们之上的领域特定的非线性分类器。</p>
 
@@ -233,7 +253,7 @@
 
 <h2 id="4-the-ilsvrc2013-detection-dataset">4. The ILSVRC2013 detection dataset</h2>
 
-<p>为了把验证集同时用作训练和验证，我们把它划分为大致相当数量的val1和val2。因为有些类在验证集中样本数量很少(最少的只有31个，超过一半的类样本少于110)，产出一个类分布大致平衡的划分就很重要。为了实现这一点，我们生成了大量候选划分，选择了最大相对类失衡度(maximum relative imbalance)最小的那一个。每个候选划分生成如下：对验证集图片根据其类别数量作为特征进行聚类，再进行randomized local search，期望提升划分的平衡性。所选取的划分的相对不平衡最大值为11%，中位值为4%。</p>
+<p>为了把验证集同时用作训练和验证，我们把它划分为大致相当数量的val1和val2。因为有些类在验证集中样本数量很少（最少的只有31个，超过一半的类样本少于110），产出一个类分布大致平衡的划分就很重要。为了实现这一点，我们生成了大量候选划分，选择了最大相对类失衡度（maximum relative imbalance）最小的那一个。每个候选划分生成如下：对验证集图片根据其类别数量作为特征进行聚类，再进行randomized local search，期望提升划分的平衡性。所选取的划分的相对不平衡最大值为11%，中位值为4%。</p>
 
 <p>R-CNN如下三个流程需要训练样本：CNN微调，SVM检测器训练和边界框回归器训练。CNN微调阶段我们用了与PASCAL同样的设定，在val1+trainN上运行了5万次SGD迭代。对于SVM训练，所有val1+trainN中的gt框都用作对应类的正样本，并在val1随机选出的5000张图片上进行hard negative mining。初始实验显示，使用5000张相比使用所有val1样本进行negative mining，mAP只下降了0.5%，但训练时间缩短了一半。没有从训练集取负样本因为那里的标注不完备。没有使用额外的验证过的负训练样本集。边界框回归是在val1上训练的。</p>
 
@@ -241,23 +261,28 @@
 
 <h3 id="b-positive-vs-negative-examples">B. Positive vs. negative examples</h3>
 
-<p>在CNN微调阶段和训练物体检测SVM时正负样本定义不一致，对于微调阶段，我们为每一个gt找到其IoU最高的region proposals，如果IoU大于等于0.5，将gt对应的类标注为正。所有其它的region标注为背景。在训练SVM时，我们只取gt所对应的类作为正样本，并把一个和某类所有对象的IoU小于0.3的proposal标注为那个类的负样本。其余的都忽略。</p>
+<p>在CNN微调阶段和训练物体检测SVM时正负样本定义是不一致的，对于微调阶段，我们为每一个gt找到其IoU最高的region proposal，如果IoU大于等于0.5，将gt对应的类标注为正。所有其它的region标注为背景。在训练SVM时，我们只取gt所对应的类作为正样本，并把一个和某类所有对象的IoU小于0.3的proposal标注为那个类的负样本。其余的都忽略。</p>
 
 <h3 id="c-bounding-box-regression">C. Bounding-box regression</h3>
 
 <p>我们用了一个简单的边界框回归来提升定位性能。在对每一个Selective search proposal用类相关的SVM评分后，我们使用一个类相关的边界框回归器为这个检测预测一个新的边界框。这有点神似deformable part models使用的边界框回归。两个方法的主要区别是我们是基于CNN提取的特征进行回归，而不是基于DPM part location提取的几何特征。</p>
 
-<p>训练算法的输入是一个N组训练对的集合$\left\{\left(P^{i}, G^{i}\right)\right\}_{i=1, \ldots, N}$，后面非必要时我们将不再标注上标 i。其中 $P=\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$对应proposal P的边界框中心坐标及其宽高。每一个 ground truth(gt)边界框 G 也是同样定义的：$G=\left(G_{x}, G_{y}, G_{w}, G_{h}\right)$。我们的目标是训练出一个变换来将 proposal 边界框 P 映射为 gt 边界框 G。</p>
+<p>训练算法的输入是一个N组训练对的集合$\left\{\left(P^{i}, G^{i}\right)\right\}_{i=1, \ldots, N}$，后面非必要时我们将不再标注上标 i。其中$P=\left(P_{x}, P_{y}, P_{w}, P_{h}\right)$对应proposal P的边界框中心坐标及其宽高。每一个 ground truth(gt)边界框 G 也是同样定义的：$G=\left(G_{x}, G_{y}, G_{w}, G_{h}\right)$。我们的目标是训练出一个变换来将 proposal 边界框 P 映射为 gt 边界框 G。</p>
 
-<p>我们把变换参数化为4个函数：$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$，前两个函数是对P的边界框中心的缩放不变性的变换。后两个函数是对边界框宽高的log-space变换。在训练这些函数后，我们能通过如下变换，将输入的proposal P 映射为gt $\hat{G}$：</p>
+<p>我们用4个函数来参数化这种转换：$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$，<strong>前两个函数是对P的边界框中心的尺度不变性变换( scale-invariant translation)，后两个函数是对边界框宽高的对数空间变换(log-space translation)</strong>。在训练这些函数后，我们能通过如下变换，将输入的proposal P 映射为gt $\hat{G}$：</p>
 
-<p>$$\hat{G}_{x} =P_{w} d_{x}(P)+P_{x} \tag{1} $$
-$$\hat{G}_{y} =P_{h} d_{y}(P)+P_{y} \tag{2} $$
-$$\hat{G}_{w} =P_{w} \exp \left(d_{w}(P)\right) \tag{3} $$
-$$\hat{G}_{h} =P_{h} \exp \left(d_{h}(P)\right) \tag{4} $$</p>
+<p>$$\hat{G}_{x}=P_{w} d_{x}(P)+P_{x} \tag{1}$$
+$$\hat{G}_{y}=P_{h} d_{y}(P)+P_{y} \tag{2}$$
+$$\hat{G}_{w}=P_{w} \exp \left(d_{w}(P)\right) \tag{3}$$
+$$\hat{G}_{h}=P_{h} \exp \left(d_{h}(P)\right) \tag{4}$$</p>
 
-<p>将每个函数$d_{⋆}(P)$(⋆是x,y,w,h其中之一)建模为一个proposal P 对应的pool5特征的线性函数，将pool5特征标记为$\phi_{5}(P)$($\phi_{5}(P)$ 对图片数据的依赖隐式地指定了)。所以我们有了$d_{\star}(P)=W_{\star}^{T} \phi_{5}(P)$，其中$W_{\star}$是一个可训练的模型参数向量。我们通过优化正则化最小二乘目标(regularized least squares objective)的脊回归(ridge regression)来训练它。
-&gt; 正则化最小二乘目标：在模式识别中会出现overfitting，而当网络逐渐overfitting时网络权值逐渐变大，为了避免出现overfitting，会给误差函数添加一个惩罚项，这个过程叫做正则化(Regularization)。常用的惩罚项是所有权重的平方乘以一个衰减常量之和。如果惩罚项是参数的L2范数，就是脊回归。</p>
+<p>将每个函数$d_{⋆}(P)$(⋆是x,y,w,h其中之一)建模为一个proposal P 对应的pool5特征的<strong>线性函数</strong>，将pool5特征标记为$\phi_{5}(P)$($\phi_{5}(P)$ 对图片数据的依赖隐式地指定了)。所以我们有了$d_{\star}(P)=W_{\star}^{T} \phi_{5}(P)$，其中$W_{\star}$是一个可训练的模型参数向量。我们通过优化正则化最小二乘目标(regularized least squares objective)的脊回归(ridge regression)来训练它。</p>
+
+<blockquote>
+<p>正则化最小二乘目标：在模式识别中会出现overfitting，而当网络逐渐overfitting时网络权值逐渐变大，为了避免出现overfitting，会给误差函数添加一个惩罚项，这个过程叫做正则化 (Regularization)。</p>
+
+<p>脊回归：常用的惩罚项是所有权重的平方乘以一个衰减常量之和。如果惩罚项是参数的L2范数，就是脊回归。</p>
+</blockquote>
 
 <p>$$
 w_{\star}=\underset{\hat{\star}}{\arg \min } \sum_{i}^{N}\left(t_{\star}^{i}-\hat{W}_{\star}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}+\lambda\left|\hat{W}_{\star}\right|\tag{5}
@@ -269,10 +294,10 @@ $$</p>
 
 <p>训练对(P, G)的回归目标$t_{⋆}$定义如下：</p>
 
-<p>$$t_{x} =\left(G_{x}-P_{x}\right)/ P_{w} \tag{6}$$
-$$t_{y} =\left(G_{y}-P_{y}\right)/ P_{h} \tag{7}$$
-$$t_{w} =\log \left(G_{w} / P_{w}\right) \tag{8}$$
-$$t_{h} =\log \left(G_{h} / P_{h}\right) \tag{9}$$</p>
+<p>$$t_{x}=\left(G_{x}-P_{x}\right)/ P_{w} \tag{6}$$
+$$t_{y}=\left(G_{y}-P_{y}\right)/ P_{h} \tag{7}$$
+$$t_{w}=\log \left(G_{w} / P_{w}\right) \tag{8}$$
+$$t_{h}=\log \left(G_{h} / P_{h}\right) \tag{9}$$</p>
 
 <p>作为一个标准regularized least squares问题，它可以高效地用闭型解决。</p>
 
@@ -282,7 +307,9 @@ $$t_{h} =\log \left(G_{h} / P_{h}\right) \tag{9}$$</p>
 
 <h2 id="个人笔记">个人笔记</h2>
 
-<p>Bounding-box回归实际就是对proposal P进行映射，使映射后的窗口$\hat{G}$和Ground Truth更接近。怎样实现映射呢？最简单的方法就是通过平移+缩放。式(1, 2)为中心点坐标平移，式(3, 4)为尺度缩放。</p>
+<ol>
+<li><p>对边界框回归的理解
+Bounding-box回归实际就是对proposal P进行映射，使映射后的窗口$\hat{G}$和Ground Truth更接近。怎样实现映射呢？最简单的方法就是通过平移+缩放。式(1, 2)为中心点坐标平移，式(3, 4)为尺度缩放。</p>
 
 <p>观察(1)-(4)我们发现， 边框回归就是学习$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$这四个映射，下一步就是设计算法那得到这四个映射。当输入的Proposal和Ground Truth接近时(论文中设置的是IoU&gt;0.6)，可以认为这种变换是一种线性变换，也就可以用线性回归来建模对窗口进行微调。</p>
 
@@ -290,25 +317,25 @@ $$t_{h} =\log \left(G_{h} / P_{h}\right) \tag{9}$$</p>
 
 <p>线性回归就是给定输入的特征向量 X, 学习一组参数 W, 使得经过线性回归后的值跟真实值 Y(Ground Truth)非常接近. 即$Y≈WX$ 。 那么 Bounding-box 中输入以及输出分别是什么呢？</p>
 
-<p><strong>Input:</strong> RegionProposal $P=(Px,Py,Pw,Ph)$输入就是这四个数值吗？其实真正的输入是这个窗口对应的 CNN 特征，也就是 R-CNN 中的 Pool5 feature(特征向量)，个人理解应该是proposal区域的特征向量。注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t_{⋆}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$。</p>
+<p><strong>Input:</strong> RegionProposal $P=(P_{x},P_{y},P_{w},P_{h})$输入就是这四个数值吗？其实真正的输入是这个窗口对应的 CNN 特征，也就是 R-CNN 中的 Pool5 feature(特征向量)，个人理解应该是proposal区域的特征向量。注：训练阶段输入还包括 Ground Truth， 也就是下边提到的$t_{⋆}=\left(t_{x}, t_{y}, t_{w}, t_{h}\right)$。</p>
 
-<p><strong>Output:</strong> 需要进行的平移变换和尺度缩放$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$， 或者说是$\Delta x, \Delta y, S_{w}, S_{h}$。有了这四个变换我们就可以直接得到 Ground Truth，另外根据(1)~(4)我们可以知道，这里得到的并不是真实值 G， 而是预测值$\hat{G}$。 值得注意的是， 这四个值应该是经过 Ground Truth 和 Proposal 计算得到的真正需要的平移量$\left(t_{x}, t_{y}\right)$和尺度缩放$\left(t_{w}, t_{h}\right)$ 。也就是 R-CNN 中的(6)~(9)。</p>
+<p><strong>Output:</strong> 需要进行的平移变换和尺度缩放$d_{x}(P), d_{y}(P), d_{w}(P), d_{h}(P)$， 或者说是$\Delta x, \Delta y, S_{w}, S_{h}$。有了这四个变换我们就可以直接得到 Ground Truth，另外根据(1)~(4)我们可以知道，这里得到的并不是真实值 G， 而是预测值$\hat{G}$。 值得注意的是， 这四个值理论上应该是经过 Ground Truth 和 Proposal 计算得到的真正需要的平移量$\left(t_{x}, t_{y}\right)$和尺度缩放$\left(t_{w}, t_{h}\right)$ ，也就是 R-CNN 中的(6)~(9)。</p>
 
-<p>那么目标函数可以表示为$d_{⋆}(P)=w_{⋆}^{T} \Phi_{5}(P)$， $\Phi_{5}(P)$是输入 Proposal 的特征向量，$w_{⋆}$是要学习的参数, $d_{⋆}(P)$是得到的预测值。 我们要让预测值跟真实值$t_{⋆}$差距最小，得到损失函数为：</p>
+<p>那么目标函数可以表示为$d_{⋆}(P)=w_{⋆}^{T} \Phi_{5}(P)$， $\Phi_{5}(P)$是输入 proposal 的特征向量，$w_{⋆}$是要学习的参数, $d_{⋆}(P)$是得到的预测值。 我们要让预测值跟真实值$t_{⋆}$差距最小，得到损失函数为：</p>
 
 <p>$$
-Loss=\sum_{i}^{N}\left(t_{<em>}^{i}-\hat{w}_{</em>}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}
+Loss=\sum_{i}^{N}\left(t_{⋆}^{i}-\hat{w}_{⋆}^{T} \phi_{5}\left(P^{i}\right)\right)^{2}
 $$</p>
 
-<p>函数优化目标见式(5)，利用梯度下降法或者最小二乘法就可以得到$w_{⋆}$。</p>
+<p>函数优化目标见式(5)，利用梯度下降法就可以得到$w_{⋆}$。</p></li>
 
-<p>几个注意点：</p>
+<li><p>对四个参数化函数(6,7,8,9)的理解：
+(6, 7)两式对平移量除以宽和高的处理是为了做尺度归一化，因为大的box可能绝对偏移量会比小的box大，除以宽和高消除尺度影响。</p></li>
+</ol>
+
+<p>(8, 9)两式比值取对数是线性回归中的常见操作(参考对数线性回归)，目的也是在一定程度上将数值的绝对变化转换为相对变化。</p>
 
 <ol>
-<li><p>(6, 7)两式对平移量除以宽和高的处理是为了做尺度归一化，因为大的box可能绝对偏移量会比小的box大，除以宽和高消除尺度影响。</p></li>
-
-<li><p>(8, 9)两式比值取对数是线性回归中的常见操作(参考对数线性回归)，目的也是在一定程度上将数值的绝对变化转换为相对变化。</p></li>
-
 <li><p>为什么 IoU 较大时可认为边框回归是一种线性变换？
 IoU 较大意味着输入的 Proposal 与 Ground Truth 相差较小，此时有$P_{w} \rightarrow G_{w}$，则有：</p>
 
@@ -343,7 +370,11 @@ $$</p>
           <a href="/tags/%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8B/">图像检测</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/fast-rcnn/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Fast RCNN</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         <a class="next" href="/post/regular-expressions/">
             <span class="next-text nav-default">正则表达式基础</span>
             <span class="next-text nav-mobile">下一篇</span>
