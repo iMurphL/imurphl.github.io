@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Ling - Stay hungry. Stay foolish.</title>
-    <link>https://imurphl.github.io/post/</link>
-    <description>Recent content in Posts on Ling - Stay hungry. Stay foolish.</description>
+    <title>目标检测 on Ling - Stay hungry. Stay foolish.</title>
+    <link>https://imurphl.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/</link>
+    <description>Recent content in 目标检测 on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
     <lastBuildDate>Sun, 18 Aug 2019 19:26:53 +0800</lastBuildDate>
     
-	<atom:link href="https://imurphl.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://imurphl.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -36,24 +36,6 @@
       
       <guid>https://imurphl.github.io/post/rcnn/</guid>
       <description>Abstract 两个关键创新点： 使用高容量的CNN(ConvNet)对 region proposals 计算 feature vectors。从经验驱动特征(SIFT、HOG)到数据驱动特征(CNN feature</description>
-    </item>
-    
-    <item>
-      <title>正则表达式基础</title>
-      <link>https://imurphl.github.io/post/regular-expressions/</link>
-      <pubDate>Sat, 18 May 2019 16:07:40 +0800</pubDate>
-      
-      <guid>https://imurphl.github.io/post/regular-expressions/</guid>
-      <description>1. 正则表达式中的常用匹配 \d匹配一个数字 \w匹配一个字母或数字 \s匹配一个广义空白符（包括Tab等空白符） .匹配除换行符以外的任意字符 2. 对于</description>
-    </item>
-    
-    <item>
-      <title>Theme preview</title>
-      <link>https://imurphl.github.io/post/even-preview/</link>
-      <pubDate>Tue, 10 Jul 2018 00:00:00 +0800</pubDate>
-      
-      <guid>https://imurphl.github.io/post/even-preview/</guid>
-      <description>Based on MarkdownPreview test.md. Markdown 1 2 3 4 5 6 7 8 # H1 ## H2 ### H3 #### H4 ##### H5 ###### H6 ### Duplicate Header ### Duplicate Header H1 H2 H3 H4 H5 H6 Duplicate Header Duplicate Header Paragraphs 1 2 3 4 This is a paragraph. I am still part of the paragraph. New paragraph. This is a paragraph. I am still part of the paragraph.</description>
     </item>
     
   </channel>

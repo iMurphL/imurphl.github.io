@@ -50,11 +50,11 @@
 
 <meta itemprop="datePublished" content="2019-08-11T21:08:17&#43;08:00" />
 <meta itemprop="dateModified" content="2019-08-11T21:08:17&#43;08:00" />
-<meta itemprop="wordCount" content="5661">
+<meta itemprop="wordCount" content="5662">
 
 
 
-<meta itemprop="keywords" content="图像检测," />
+<meta itemprop="keywords" content="目标检测," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Fast RCNN"/>
 <meta name="twitter:description" content="1. Introduction 目标检测有两个主要挑战： 需要处理大量的候选物体位置（通常称为proposal）。 这些候选框只提供了粗糙的位置，需要修正以实现精确定位。 这"/>
@@ -125,7 +125,7 @@
       <div class="post-meta">
         <span class="post-time"> 2019-08-11 </span>
         
-          <span class="more-meta"> 约 5661 字 </span>
+          <span class="more-meta"> 约 5662 字 </span>
           <span class="more-meta"> 预计阅读 12 分钟 </span>
         
       </div>
@@ -271,7 +271,7 @@ $$</p>
 
 <p><strong>Back-propagation through RoI pooling layers</strong> 反向传播沿着RoI池化层的导数传递。为了简洁，我们设定每个mini-batch为一张图片（N = 1），不过扩展到N &gt; 1也很直接，因为前向传播是独立处理每张图片的。</p>
 
-<p>设$x_{i} \in \mathbb{R}$是RoI池化层的第i个激活值输入，$y_{rj}$为第r个RoI的第j个输出。RoI pooling层计算$y_{r j}=x_{i^{<em>}(r, j)}$，其中$i^{</em>}(r, j)=\operatorname{argmax}_{i^{\prime} \in \mathcal{R}(r, j)} x_{i^{\prime}}$。$\mathcal{R}(r, j)$是输出单元$y_{rj}$用于最大池化的子窗口的坐标集(the index set)。一个$x_{i}$可能被分配给多个不同的输出$y_{rj}$。</p>
+<p>设$x_{i} \in \mathbb{R}$是RoI池化层的第i个激活值输入，$y_{rj}$为第r个RoI的第j个输出。RoI pooling层计算$y_{r j}=x_{i^{*}(r, j)}$，其中$i^{*}(r, j)=\operatorname{argmax}_{i^{\prime} \in \mathcal{R}(r, j)} x_{i^{\prime}}$。$\mathcal{R}(r, j)$是输出单元$y_{rj}$用于最大池化的子窗口的坐标集(the index set)。一个$x_{i}$可能被分配给多个不同的输出$y_{rj}$。</p>
 
 <p>RoI pooling层的反向传播函数对每个输入$x_{i}$通过argmax开关计算损失函数的偏导：</p>
 
@@ -356,10 +356,14 @@ $$</p>
 </div>
 <footer class="post-footer">
       <div class="post-tags">
-          <a href="/tags/%E5%9B%BE%E5%83%8F%E6%A3%80%E6%B5%8B/">图像检测</a>
+          <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a>
           </div>
       <nav class="post-nav">
-        
+        <a class="prev" href="/post/faster-rcnn/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Faster Rcnn</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
         <a class="next" href="/post/rcnn/">
             <span class="next-text nav-default">RCNN: Regions with CNN features</span>
             <span class="next-text nav-mobile">下一篇</span>
