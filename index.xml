@@ -6,7 +6,7 @@
     <description>Recent content on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Sun, 18 Aug 2019 19:26:53 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 01 Sep 2019 18:52:43 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -21,7 +21,25 @@
     </item>
     
     <item>
-      <title>Faster Rcnn</title>
+      <title>YOLOv2</title>
+      <link>https://imurphl.github.io/post/yolov2/</link>
+      <pubDate>Sun, 01 Sep 2019 18:52:43 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/yolov2/</guid>
+      <description>1. Introduction 当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据</description>
+    </item>
+    
+    <item>
+      <title>YOLO：You Only Look Once</title>
+      <link>https://imurphl.github.io/post/yolo/</link>
+      <pubDate>Sun, 01 Sep 2019 18:40:41 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/yolo/</guid>
+      <description>1. Introduction 目前的检测系统用分类器来执行检测，为了检测一个目标，这些系统使用一个分类器在测试图片上的不同位置和尺寸上评估它。像DPM这样的系统使用一</description>
+    </item>
+    
+    <item>
+      <title>Faster RCNN</title>
       <link>https://imurphl.github.io/post/faster-rcnn/</link>
       <pubDate>Sun, 18 Aug 2019 19:26:53 +0800</pubDate>
       

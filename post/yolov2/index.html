@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>YOLOv2 - Ling - Stay hungry. Stay foolish.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="ling" /><meta name="description" content="1. Introduction 当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.3 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://imurphl.github.io/post/yolov2/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="YOLOv2" />
+<meta property="og:description" content="1. Introduction 当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://imurphl.github.io/post/yolov2/" />
+<meta property="article:published_time" content="2019-09-01T18:52:43+08:00" />
+<meta property="article:modified_time" content="2019-09-01T18:52:43+08:00" />
+<meta itemprop="name" content="YOLOv2">
+<meta itemprop="description" content="1. Introduction 当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据">
+
+
+<meta itemprop="datePublished" content="2019-09-01T18:52:43&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-01T18:52:43&#43;08:00" />
+<meta itemprop="wordCount" content="4096">
+
+
+
+<meta itemprop="keywords" content="目标检测," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="YOLOv2"/>
+<meta name="twitter:description" content="1. Introduction 当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">😃</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">😃</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">YOLOv2</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-01 </span>
+        
+          <span class="more-meta"> 约 4096 字 </span>
+          <span class="more-meta"> 预计阅读 9 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#1-introduction">1. Introduction</a></li>
+<li><a href="#2-better">2. Better</a></li>
+<li><a href="#3-faster">3. Faster</a></li>
+<li><a href="#4-stronger">4. Stronger</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<h2 id="1-introduction">1. Introduction</h2>
+
+<p>当前的目标检测数据集相比其它数据集(如分类和标记)相当有限。最常见的检测数据集包含几千张至几十万张图片，有着几十到几百个标签；而分类数据集多为数百万张图片，多达数万或数十万种类。</p>
+
+<p>我们希望检测数据集也能达到目标分类的尺度，但是为检测标注图像比为分类标注图像需要更高的代价(标签通常由使用者免费提供)，因此近期我们不太可能看到检测数据集达到分类数据集的尺度。</p>
+
+<!-- ~~我们提出了利用大量已有的分类数据集来扩充检测系统的新方法，使用目标分类的层次视图(hierarchical view)，它允许我们将不同的数据集结合起来。~~
+
+~~我们还提出了一种联合训练算法，它允许我们同时在检测集和分类集上训练目标检测器，我们的方法使用已标注的检测图像来学习准确定位目标，另一方面使用分类数据集增强其容纳性和鲁棒性。~~ -->
+
+<h2 id="2-better">2. Better</h2>
+
+<p>相比于Faster RCNN，YOLO有更多的定位误差，而且召回率低，因此我们重点在于在保持分类准确性的同时提升召回率和定位准确性。</p>
+
+<p>计算机视觉通常倾向于使用更大更深的网络，更好的性能通常依靠训练更大的网络或组合多个模型。但是对于YOLOv2，我们想要一个更准确而且仍然很快速的检测器，我们没有放大网络，而是简化网络使其表示内容更容易学习。我们把过去工作的各种想法与新观念汇集起来提升YOLO的性能。结果总结于图表2。</p>
+
+<p><img src="/img/yolov2/improve.png" alt="improve" /></p>
+
+<p><strong>Batch Normalization(批量标准化).</strong> bn能显著提高收敛度，并且消除了其它形式的正则化的需要。为所有conv层添加bn能提升2%的mPA。bn还能正则化模型，有了bn可以移除dropout而不会过拟合。</p>
+
+<p><strong>High Resolution Classifier(高分辨率分类器).</strong> YOLO训练分类网络的输入分辨率从$224*224$提升到$448*448$。这意味着该网络需要同时学习目标检测和适应新的输入分辨率。</p>
+
+<p>对于YOLOv2我们用$448*448$分辨率的ImageNet对分类网络进行第一次微调，训练10个epoch，给网络以时间来调整过滤器，使其在高分辨率输入下表现更好。然后我们在目标检测时对生成的网络进行第二次微调。此高分辨率分类网络提高了近4%的mAP。</p>
+
+<p><strong>Convolutional With Anchor Boxes(卷积与anchor).</strong> YOLO直接使用卷积特征图上的fc层来预测边界框的坐标，而Faster RCNN用手工选择的先验框来预测边界框，而不是直接预测坐标。Faster RCNN的RPN只使用conv层来预测anchor box的偏移量和置信度，由于进行预测的是卷积层，所以RPN可以在特征图的每一个位置预测这些偏移量，预测偏移量而不是坐标能简化问题并且是网络更容易学习。</p>
+
+<p>我们从YOLO中移除了fc层并用另一个框来预测边界框。我们移除了一个池化层使conv层的输出有更高的分辨率，并缩小了网络使其接收416分辨率的输入而不是448，因为我们希望在特征图上得到奇数个位置从而只有一个中央单元。目标（特别是大的目标）倾向于占据图像中央，所以在图片中央取一个位置而不是四个挤在一起的位置是比较好的方案。YOLO的CNN对图片下采样的比例因子为32，所以对于$416*416$的输入图像会得到$13*13$的输出特征图。</p>
+
+<p>当我们转移到anchor box时，我们还将类预测机制从空间位置分离，为每一个anchor box预测类别和置信度。<strong>YOLO的目标预测( objectness prediction，预测有无目标)仍然是通过预测gt和建议框（proposed box）的IOU实现的，类别预测(class predictions，预测目标类别)是通过预测条件类别概率实现的。</strong></p>
+
+<p>使用anchor box后我们的准确率有小幅下降，YOLO原本对每张图只预测98个框，使用anchor box后需要预测超过1000个框。使用前mAP为69.5，召回率为81%；使用后分别为69.2和88%。即使mAP下降了，召回率上升说明模型还有提升空间。</p>
+
+<p><strong>Dimension Clusters (维度集群).</strong> 我们在使用anchor box的时候遭遇了两个问题，首先框的维度是手工挑选的，网络会学习去适配边界框，但如果我们能挑选更好的先验框用于训练，可以使网络更容易预测好的结果。</p>
+
+<blockquote>
+<p>维度集群：先验框尺寸的集合。</p>
+</blockquote>
+
+<p>我们在训练集边界框上运行k-means聚类来自动找到好的先验框，而不是手工选择。如果我们使用欧式距离的标准k-means，大的边界框会比小的产生更多误差。但是，我们需要的是可以得到好的IOU分数的先验框，这与框的大小无关，因此我们的距离度量为：</p>
+
+<p>$$
+d(box,centroid)=1-IOU(box,centroid)
+$$</p>
+
+<blockquote>
+<p>欧式距离的标准k-means？</p>
+</blockquote>
+
+<p>我们使用不同的k值运行k-means，并画出了与最近聚类中心点的平均IOU<!-- ，见图2-->。我们选择k=5作为模型复杂性和高召回率的平衡点。聚类中心点与手工挑选的anchor box相差巨大，矮宽的框较少而高瘦的框比较多。</p>
+
+<p>我们比较了聚类策略下最近的先验框和手工挑选的anchor box的平均IOU<!-- ，见表1-->。只需5个聚类中心其表现就超过了9个anchor box，以61.0的IOU超过60.9的IOU。如果用9个聚类中心会得到更高的平均IOU。</p>
+
+<p><strong>Direct location prediction(直接位置预测).</strong> 将anchor box用于YOLO时我们遇到了另一个问题：模型不稳定，特别是在早期迭代时期。大部分的不稳定来自于预测边界框的(x,y)坐标，在RPN中网络预测$t_{x}$和$t_{y}$，然后(x,y)坐标以如下方式计算：</p>
+
+<p>$$
+\begin{aligned}
+x&amp;=(t_{x}*w_{a})-x_{a}\<br />
+y&amp;=(t_{y}*h_{a})-y_{a}
+\end{aligned}
+$$</p>
+
+<p>举个栗子，预测值$t_{x}=1$会将边界框向右移动一个anchor box的宽度，预测值$t_{x}=-1$则相反。</p>
+
+<blockquote>
+<p>存疑。应该是<code>+</code>？
+$$
+\begin{aligned}
+x&amp;=(t_{x}*w_{a})+x_{a}\<br />
+y&amp;=(t_{y}*h_{a})+y_{a}
+\end{aligned}
+$$</p>
+</blockquote>
+
+<p>这个公式没有约束条件，如果不考虑边界框位置预测，任何anchor box都能移动到图像上任意一处，在随机初始化的条件下模型需要很长时间稳定下来。</p>
+
+<p><strong>我们按照YOLO的方法来预测相对于网格单元的位置坐标，而不是预测偏移量，这将gt限制在0和1之间</strong>。我们使用逻辑激活函数约束网络预测值落在这一范围。</p>
+
+<p><strong>网络在输出特征图的每个网格单元里预测5个边界框，为每个边界框预测5个坐标$(t_{x},t_{y},t_{w},t_{h},t_{o})$</strong>。如果网格单元与图像左上角偏移量为$(c_{x},c_{y})$，先验框的宽高分别为$p_{w},p_{h}$，则预测值为：</p>
+
+<p>$$
+\begin{aligned}
+b_{x}=\sigma (t_{x})+c_{x} \<br />
+b_{y}=\sigma (t_{y})+c_{y} \<br />
+b_{w}=p_{w}e^{t_{w}} \<br />
+b_{h}=p_{h}e^{t_{h}} \<br />
+Pr(object)*IOU(b,object)=\sigma (t_{o})
+\end{aligned}
+$$</p>
+
+<p>因为我们约束了位置预测，参数更容易学习，网络因此更稳定。使用维度集群以及直接预测边界框中心位置比使用anchor box提高了5%的mAP。</p>
+
+<p><img src="/img/yolov2/box.png" alt="box" /></p>
+
+<p><strong>Fine-Grained Features(精细特征).</strong> 此修改版的YOLO在$13*13$的特征图上检测目标，在足够应对大的目标的同时，还可能受益于更加精细的特征从而能定位更小的目标。 Faster RCNN和SSD都在网络多个不同的特征图上运行建议网络，从而得到一系列分辨率范围。我们采取了不同的方法，只需添加一个直通层(passthrough layer)将前几层$26*26$分辨率的特征图带过来。</p>
+
+<p>直通层通过把相邻特征堆叠到不同的通道而不是空间位置，将高分辨率特征和低分辨率特征以堆叠的方式连接起来，类似于ResNet中的一致性映射(identity mappping)。这将$26*26*512$的特征图转换为$13*13*2048$的特征图，然后可以与原始特征图连接起来。检测器在此扩展后的特征图上运行，因此能接触到精细特征。这提高了1%的mAP。</p>
+
+<p><strong>Multi-Scale Training(多尺度训练).</strong> 原始YOLO的输入分辨率为$480*480$。再添加了anchor box后分辨率变为$416*416$。但我们的模型仅使用conv层和池化层，因此能动态调整大小。我们想让YOLOv2在不同尺寸的图像上运行时具有鲁棒性，所以将其训练到模型中。</p>
+
+<p>我们每隔几个迭代就改变网络，而不是改变图像大小，每10次迭代模型就会随机选择新的图像维度。由于模型的下采样因子为32，我们从32的倍数中选择维度：$\{320,352,&hellip;,608\}$，最小320，最大608。将网络调整至该维度之后继续训练。</p>
+
+<blockquote>
+<p>图像维度：即输入图像的尺寸。</p>
+</blockquote>
+
+<p>这种规定使得网络在不同的输入维度下表现很好，这意味着同样的网络能在不同的分辨率下检测目标，网络在小尺寸下运行很快，因此YOLOv2在速度和准确度上达到了一个平衡。</p>
+
+<p>低分辨率条件下YOLOv2相当于一个低廉且相当准确的检测器，在$280*280$时它以90FPS的速度运行且mAP和Fast RCNN相当，是用于较小GPU，高帧率视频或多视频流的理想选择。</p>
+
+<p>高分辨率条件下YOLOv2是最前沿的检测器，在VOC2017上有着78.6的mAP且仍以高于实时速度运行。</p>
+
+<h2 id="3-faster">3. Faster</h2>
+
+<p>VGG16是一个很强大准确率很高的分类网络，但过于复杂。YOLO框架使用了基于Goolenet的自定义网络，它比VGG16更快但准确率略差。</p>
+
+<p><strong>Darknet-19.</strong> 我们提出了新的分类模型用于YOLOv2，我们的模型建立在网络设计的先前工作以及该领域的常识之上。和VGG类似，我们主要使用了$3*3$的过滤器，在每个池化层将通道数加倍，根据NIN(Network In Network)的研究工作，我们使用了全局平均池化进行预测，并在$3*3$的conv层之间用$1*1$的过滤器压缩特征图。我们使用bn来稳定训练，加速收敛以及正则化模型。</p>
+
+<p>我们最终的模型称为Darknet-19，它有19个conv层和5个最大池化层，详见表6。</p>
+
+<p><img src="/img/yolov2/darknet19.png" alt="darknet19" /></p>
+
+<p><strong>Training for classification.</strong> 我们在标准的ImageNet1000类分类数据集训练了160个epoch，使用SGD，初始lr为0.1，幂为4的多项式速率衰减，权重衰减为0.0005，动量为0.9。在训练时我们使用了标准的数据增强技巧，包括随机裁剪和旋转，以及色调，饱和度和曝光度的调整。</p>
+
+<p>正如前面讨论的，在$224*224$的图像上预训练后，我们将网络在448的分辨率上进行微调。因为这个微调我们用以上的参数只训练了10个epoch，然后以0.001的lr开始训练。</p>
+
+<p><strong>Training for detection.</strong> 我们修改了网络用于检测，移除了最后一个conv层，并添加了3个$3*3$的conv层，后接一个最终的$1*1$的conv层，输出我们需要的个数用于检测。对于VOC我们预测5个框，每个框输出5个坐标值和20个类别值，故有125个过滤器。我们还增加了一个直通层，从最后一个$3*3*512$的层到倒数第二个conv层，因此我们的模型可以使用精细特征。</p>
+
+<p>我们的模型训练了160个epoch，初始lr为0.001，在第60个和第90个epoch将lr除以10，权重衰减为0.0005，动量为0.9，数据增强和YOLO类似，包括随机裁剪，颜色偏移等。</p>
+
+<h2 id="4-stronger">4. Stronger</h2>
+
+<p>&hellip;</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">ling</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-01
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/yolo/">
+            <span class="next-text nav-default">YOLO：You Only Look Once</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:371788386@qq.com" class="iconfont icon-email" title="email"></a>
+  <a href="https://imurphl.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ling</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
