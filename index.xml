@@ -6,7 +6,7 @@
     <description>Recent content on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Sun, 01 Sep 2019 18:52:43 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 09 Sep 2019 08:52:11 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>https://imurphl.github.io/about/</guid>
       <description>资源来源于网络，共享于网络。</description>
+    </item>
+    
+    <item>
+      <title>YOLOv3</title>
+      <link>https://imurphl.github.io/post/yolov3/</link>
+      <pubDate>Mon, 09 Sep 2019 08:52:11 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/yolov3/</guid>
+      <description>&amp;hellip; 2. The Deal 2.1 Bounding Box Prediction(边框预测) 根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box</description>
     </item>
     
     <item>
@@ -92,7 +101,7 @@
       <description>README 发表博客：
  打开当前目录的终端 终端执行hugo new post/File_Name.md新建文件 写文章 终端执行hugo server本地预览 修改格式，用 \_ replace _ 避免markdown与mathjax的语法冲突（暂时的解决办法）。看下面的注意2。 修改完毕 终端执行hugo在public文件夹生成相应的文件（此行为不可撤销，需谨慎） 两次运行update.sh把content和public上传到相应的github  本地站点丢失的恢复步骤：
  下载hugo，新建站点 克隆主题even到文件夹themes pull content和public的内容 hugo server预览 预览无误后同上述步骤7和8  注意1： hugo before update
-注意2： _用\_代替 \\用\\\\代替 \{用\\{代替 \}用\\}代替 *用\*代替</description>
+注意2： _用\_代替 \\用\\\\代替 \{用\\{代替 \}用\\}代替 *用\*代替: (?&amp;lt;!*)*(?!*)</description>
     </item>
     
   </channel>

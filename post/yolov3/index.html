@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>YOLOv3 - Ling - Stay hungry. Stay foolish.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="ling" /><meta name="description" content="&amp;hellip; 2. The Deal 2.1 Bounding Box Prediction(边框预测) 根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.3 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://imurphl.github.io/post/yolov3/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="YOLOv3" />
+<meta property="og:description" content="&hellip; 2. The Deal 2.1 Bounding Box Prediction(边框预测) 根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://imurphl.github.io/post/yolov3/" />
+<meta property="article:published_time" content="2019-09-09T08:52:11+08:00" />
+<meta property="article:modified_time" content="2019-09-09T08:52:11+08:00" />
+<meta itemprop="name" content="YOLOv3">
+<meta itemprop="description" content="&hellip; 2. The Deal 2.1 Bounding Box Prediction(边框预测) 根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box">
+
+
+<meta itemprop="datePublished" content="2019-09-09T08:52:11&#43;08:00" />
+<meta itemprop="dateModified" content="2019-09-09T08:52:11&#43;08:00" />
+<meta itemprop="wordCount" content="2177">
+
+
+
+<meta itemprop="keywords" content="目标检测," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="YOLOv3"/>
+<meta name="twitter:description" content="&hellip; 2. The Deal 2.1 Bounding Box Prediction(边框预测) 根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">😃</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">😃</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">YOLOv3</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-09-09 </span>
+        
+          <span class="more-meta"> 约 2177 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#2-the-deal">2. The Deal</a>
+<ul>
+<li><a href="#2-1-bounding-box-prediction-边框预测">2.1 Bounding Box Prediction(边框预测)</a></li>
+<li><a href="#2-2-class-prediction-类预测">2.2 Class Prediction(类预测)</a></li>
+<li><a href="#2-3-predictions-across-scale-多尺度预测">2.3 Predictions Across Scale(多尺度预测)</a></li>
+<li><a href="#2-4-feature-extractor-特征提取">2.4 Feature Extractor(特征提取)</a></li>
+<li><a href="#2-5-training">2.5 Training</a></li>
+</ul></li>
+<li><a href="#3-how-we-do">3. How We Do</a></li>
+<li><a href="#4-things-we-tried-that-didn-t-work">4. Things We Tried That Didn’t Work</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p>&hellip;</p>
+
+<h2 id="2-the-deal">2. The Deal</h2>
+
+<p><img src="/img/yolov3/yolov3.png" alt="yolov3" /></p>
+
+<h3 id="2-1-bounding-box-prediction-边框预测">2.1 Bounding Box Prediction(边框预测)</h3>
+
+<p>根据YOLO9000的方法，系统使用维度集群作为anchor box来预测bounding box(边界框)，网络为每个边界框预测4个坐标$(t_{x},t_{y},t_{w},t_{h})$。如果网格单元与图像左上角的偏移量为$(c_{x},c_{y})$，先验边界框的宽高分别为$p_{w},p_{h}$，则预测值为：</p>
+
+<p>$$
+\begin{aligned}
+b_{x}=\sigma (t_{x})+c_{x} \<br />
+b_{y}=\sigma (t_{y})+c_{y} \<br />
+b_{w}=p_{w}e^{t_{w}} \<br />
+b_{h}=p_{h}e^{t_{h}}
+\end{aligned}
+$$</p>
+
+<p>在训练时我们使用平方和误差损失，如果一些坐标预测值对应的gt为$\hat{t}_{*}$，梯度是gt值减去预测值：$\hat{t}_{*}-t_{*}$。该gt值很容易通过反转上述公式计算出。</p>
+
+<p>YOLOv3用逻辑回归为每个边界框预测一个目标分数(objectness score, 判断有无目标)。如果先验边界框与一个gt的重叠度超过其它所有先验边界框，此目标分数应为1。如果先验边界框不是最好但与gt重叠度超过某一阈值，此预测值将被忽略，和Faster RCNN一样。我们将阈值设为0.5。与Faster RCNN不同的是，我们只为每个gt目标分配一个先验边界框。如果一个先验边界框没有被分配到gt目标，它不会导致坐标或类预测的损失，only objectness。</p>
+
+<h3 id="2-2-class-prediction-类预测">2.2 Class Prediction(类预测)</h3>
+
+<p>每个边框用多标签分类来预测边界框可能包含的类别，我们不使用softmax，因为它不是好的性能所必须的，取而代之我们仅使用独立的逻辑分类器。在训练时使用二分类交叉熵损失用于类预测。</p>
+
+<p>当我们迁移到更复杂的领域时，比如Open Images Dataset，此方案会有所帮助。在这个数据集中有许多重叠的标签(比如Woman和Person)，使用softmax强加了每个框仅有一个类别的假设，而事实并非如此。</p>
+
+<h3 id="2-3-predictions-across-scale-多尺度预测">2.3 Predictions Across Scale(多尺度预测)</h3>
+
+<p>YOLOv3以3种不同的尺度预测边框，我们的系统以这些尺度提取特征，与特征金字塔网络FPN(feature pyramid networks)的观念类似。我们为基本的特征提取器增加了几个conv层，其中最后一层输出一个3d tensor，编码了边界框，objectness和类预测。在我们的关于COCO数据集的实验中，我们在每个尺度上预测了3个边框，所以此tensor为$N*N*[3*(4+1+80)]$，表示4个边界框偏移量，1个objectness预测值，和80个类预测值。</p>
+
+<p>然后我们提取两层前的特征图并对其进行2倍上采样，我们还提取了网络前面的某一层的特征图，将其与上采样的特征堆叠起来，此方法允许我们从上采样的特征和前面特征图里精细的特征得到更多有意义的语义信息。然后我们增加了一些conv层来处理组合的特征图，并最终输出类似的tensor，即使尺寸变为两倍。</p>
+
+<p>我们再次执行相同的设计来为最后一个尺度预测边框，因此我们为第三个尺度的预测值受益于先前所有的计算和网络前面某层的精细特征。</p>
+
+<p>我们同样使用k-means聚类来决定先验边界框，我们只是随意选择了9个簇和3个尺度，并将簇均匀分布到各尺度中。在COCO数据集中9个簇分别为：(10×13),(16×30),(33×23),(30×61),(62×45),(59×119),(116×90),(156×198),(373×326)。</p>
+
+<h3 id="2-4-feature-extractor-特征提取">2.4 Feature Extractor(特征提取)</h3>
+
+<p>我们使用了一个新的网络来提取特征，该网络是Darknet19和ResNet的混合方案，相继使用了$3*3$和$1*1$的conv层，并增加了一些shortcut层，网络相当巨大，含有53个conv层，我们称其为Darknet53。</p>
+
+<p><img src="/img/yolov3/darknet53.png" alt="darknet53" /></p>
+
+<p>这个新网络比Darknet19更加强大，比Resnet101或Resnet152更加高效。ImageNet结果如下：</p>
+
+<p><img src="/img/yolov3/comparison.png" alt="comparison" /></p>
+
+<h3 id="2-5-training">2.5 Training</h3>
+
+<p>我们仍在完整图像上训练，没有难例挖矿(hard negative mining)，我们使用了多尺度训练，数据增强，bn等常规操作。</p>
+
+<blockquote>
+<p>难例挖矿：正样本的数量远远小于负样本，这样训练出来的分类器的效果总是有限的，会出现许多false positive，把其中得分较高的false positive当做hard negative，既然mining出了这些Hard negative，就把这些扔进网络再训练一次，从而加强分类器判别假阳性的能力。</p>
+</blockquote>
+
+<h2 id="3-how-we-do">3. How We Do</h2>
+
+<p>在COCO新的average mAP评价方法下，YOLOv3的性能与SSD变种相当但快3倍，仍落后于RetinaNet等模型。</p>
+
+<p><img src="/img/yolov3/metric.png" alt="metric" /></p>
+
+<p>在旧mAP评价方法(IOU=0.5)下，YOLOv3非常强大，接近RetinaNet，远超SSD变种。这表明YOLOv3是一个非常强的检测器，擅长预测合适的边框，但当IOU阈值上升时性能大幅下降，说明它很难让边框与目标完美对齐。</p>
+
+<p>过去YOLO难以处理小目标，现在有相反的趋势。使用新的多尺度预测，YOLOv3有着相对较高的AP性能，但是对于中大型目标，其性能相对较差。</p>
+
+<p>当我们在$AP^{50}$上画出accuracy vs speed曲线时，我们发现YOLOv3明显好过其它系统，见图3。</p>
+
+<blockquote>
+<p>$AP^{50}$: mAP at IOU=.50(VOC metric)</p>
+</blockquote>
+
+<p><img src="/img/yolov3/metric1.png" alt="metric1" /></p>
+
+<h2 id="4-things-we-tried-that-didn-t-work">4. Things We Tried That Didn’t Work</h2>
+
+<p>&hellip;</p>
+
+<p><strong>Dual IOU thresholds and truth assignment(双IOU阈值和truth分配).</strong> Faster R-CNN在训练时使用了两个IOU阈值。如果预测框与gt的重叠度超过0.7，它被认为是正样本，[0.3-0.7]之间忽略，与所有gt目标都低于0.3的作为负样本。我们使用了类似策略但结果不佳。</p>
+
+<p>&hellip;</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">ling</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-09-09
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/yolov2/">
+            <span class="next-text nav-default">YOLOv2</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:371788386@qq.com" class="iconfont icon-email" title="email"></a>
+  <a href="https://imurphl.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ling</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
