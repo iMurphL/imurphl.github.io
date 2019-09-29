@@ -6,7 +6,7 @@
     <description>Recent content on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Sat, 28 Sep 2019 18:52:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 29 Sep 2019 19:15:03 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>https://imurphl.github.io/about/</guid>
       <description>资源来源于网络，共享于网络。</description>
+    </item>
+    
+    <item>
+      <title>PSMNet &amp; SPP</title>
+      <link>https://imurphl.github.io/post/psmnet/</link>
+      <pubDate>Sun, 29 Sep 2019 19:15:03 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/psmnet/</guid>
+      <description>Pyramid Stereo Matching Network 1. Introduction 立体图像的深度估计对计算机视觉应用是有必要的，包括车辆自动驾驶，3D模型重建，以及目标检测和识别。给出一对矫正的立体图像，深度估</description>
     </item>
     
     <item>
