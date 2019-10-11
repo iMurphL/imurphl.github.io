@@ -6,10 +6,28 @@
     <description>Recent content in 目标检测 on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Sun, 29 Sep 2019 19:15:03 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 11 Oct 2019 16:44:16 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>MobileNet</title>
+      <link>https://imurphl.github.io/post/mobilenet/</link>
+      <pubDate>Fri, 11 Oct 2019 16:44:16 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/mobilenet/</guid>
+      <description>MobileNets: Efficient Convolutional Neural Networks for Mobile Vision Applications 1. Introduction &amp;hellip; 本paper描述了一个高效的网络架构和一组双超参数(a set of two hyper-parameters)，以构建非常小的，低延</description>
+    </item>
+    
+    <item>
+      <title>CornerNet</title>
+      <link>https://imurphl.github.io/post/cornernet/</link>
+      <pubDate>Fri, 11 Oct 2019 16:26:58 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/cornernet/</guid>
+      <description>CornerNet: Detecting Objects as Paired Keypoints 1 Introduction &amp;hellip; 在本paper中，我们介绍了CornerNet，这是一种新的单步目标检测方法，可以消除anchor box。我们用一对关键点</description>
+    </item>
     
     <item>
       <title>PSMNet &amp; SPP</title>
