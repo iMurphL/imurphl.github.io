@@ -6,10 +6,19 @@
     <description>Recent content in 目标检测 on Ling - Stay hungry. Stay foolish.</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-ch</language>
-    <lastBuildDate>Fri, 11 Oct 2019 16:44:16 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 20 Oct 2019 13:56:05 +0800</lastBuildDate>
     
 	<atom:link href="https://imurphl.github.io/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Focal Loss</title>
+      <link>https://imurphl.github.io/post/focalloss/</link>
+      <pubDate>Sun, 20 Oct 2019 13:56:05 +0800</pubDate>
+      
+      <guid>https://imurphl.github.io/post/focalloss/</guid>
+      <description>Focal Loss for Dense Object Detection &amp;hellip; 3. Focal Loss Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cr</description>
+    </item>
     
     <item>
       <title>MobileNet</title>

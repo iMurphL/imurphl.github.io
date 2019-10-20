@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Focal Loss - Ling - Stay hungry. Stay foolish.</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="ling" /><meta name="description" content="Focal Loss for Dense Object Detection &amp;hellip; 3. Focal Loss Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cr" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.56.3 with even 4.0.0" />
+
+
+<link rel="canonical" href="https://imurphl.github.io/post/focalloss/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+<link href="/dist/even.c2a46f00.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="Focal Loss" />
+<meta property="og:description" content="Focal Loss for Dense Object Detection &hellip; 3. Focal Loss Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cr" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://imurphl.github.io/post/focalloss/" />
+<meta property="article:published_time" content="2019-10-20T13:56:05+08:00" />
+<meta property="article:modified_time" content="2019-10-20T13:56:05+08:00" />
+<meta itemprop="name" content="Focal Loss">
+<meta itemprop="description" content="Focal Loss for Dense Object Detection &hellip; 3. Focal Loss Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cr">
+
+
+<meta itemprop="datePublished" content="2019-10-20T13:56:05&#43;08:00" />
+<meta itemprop="dateModified" content="2019-10-20T13:56:05&#43;08:00" />
+<meta itemprop="wordCount" content="2373">
+
+
+
+<meta itemprop="keywords" content="目标检测," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Focal Loss"/>
+<meta name="twitter:description" content="Focal Loss for Dense Object Detection &hellip; 3. Focal Loss Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cr"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">😃</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">主页</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">归档</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">标签</li>
+      </a><a href="/about/">
+        <li class="mobile-menu-item">关于</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">😃</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">主页</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">归档</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">标签</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/about/">关于</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Focal Loss</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-20 </span>
+        
+          <span class="more-meta"> 约 2373 字 </span>
+          <span class="more-meta"> 预计阅读 5 分钟 </span>
+        
+      </div>
+    </header>
+
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#3-focal-loss">3. Focal Loss</a>
+<ul>
+<li><a href="#3-1-balanced-cross-entropy">3.1. Balanced Cross Entropy</a></li>
+<li><a href="#3-2-focal-loss-definition">3.2. Focal Loss Definition</a></li>
+<li><a href="#3-3-class-imbalance-and-model-initialization">3.3. Class Imbalance and Model Initialization</a></li>
+<li><a href="#3-4-class-imbalance-and-two-stage-detectors">3.4. Class Imbalance and Two-stage Detectors</a></li>
+</ul></li>
+<li><a href="#4-retinanet-detector">4. RetinaNet Detector</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
+      
+
+<p><a href="https://arxiv.org/pdf/1708.02002.pdf">Focal Loss for Dense Object Detection</a></p>
+
+<p>&hellip;</p>
+
+<h2 id="3-focal-loss">3. Focal Loss</h2>
+
+<p>Focal损失旨在解决单步检测场景中训练时前景和背景类的极度不平衡问题(比如1：1000)。我们从二元分类的交叉熵(cross entropy, CE)损失开始引入focal损失：</p>
+
+<p>$$
+\text{CE}(p,y)=\left\{\begin{array}{ll}
+{-\text{log}(p)} &amp; {\text{if }y=1} \<br />
+{-\text{log}(1-p)} &amp; {\text{otherwise}}
+\end{array}\right. \tag{1}
+$$</p>
+
+<p>上述$y\in \{\plusmn 1\}$指定gt类别，$p\in [0,1]$是模型对标签$y=1$的类估计概率，为了符号方便，我们定义$p_{t}$：</p>
+
+<p>$$
+p_{t}=\left\{\begin{array}{ll}
+{p} &amp; {\text{if }y=1} \<br />
+{1-p} &amp; {\text{otherwise}}
+\end{array}\right. \tag{1}
+$$</p>
+
+<p>并重写$\text{CE}(p,y)=\text{CE}(p_{t})=-\text{log}(p_{t})$。</p>
+
+<blockquote>
+<p>二分类交叉熵损失的另一种写法：
+$$
+\text{CE}(p,y)=-[y*\text{log}(p)+(1—y)*\text{log}(1-p)]
+$$</p>
+</blockquote>
+
+<p>CE损失可以被视为Fig.1中的蓝色曲线。从图中很容易看出，该损失的一个值得注意的特点是，即使是很容易分类($p_{t}&gt;.5$)的例子也会导致不小的幅值的损失。当大量的easy example相加时，这些小的损失会压倒较少的类别。</p>
+
+<p><img src="/img/focalloss(retinanet)/focal.png" alt="focal" />
+&gt; 我们提出一种新的损失Focal Loss，它在标准的CE准则上增加了一个因子$(1-p_{t})^{\gamma}$，设置$\gamma&gt;0$减少容易分类的样例的相对损失($p_{t}&gt;.5$)，使注意力更多集中在难以分类的实例。正如我们的实验将证明的那样，focal损失可以在存在大量简单背景样例的情况下训练出高精度的<strong>密集型目标检测器</strong>。</p>
+
+<h3 id="3-1-balanced-cross-entropy">3.1. Balanced Cross Entropy</h3>
+
+<p>解决类不平衡的常用方法是为class 1引入权重因子$\alpha\in[0,1]$，为class -1引入权重因子$1-\alpha$。实际中$\alpha$可能通过相反的类别频率设置，或者被视超参数通过交叉验证(cross validation)的方式设置。为了方便，我们定义$\alpha_{t}$类似于我们定义$p_{t}$，我们将$\alpha$-balance CE损失写为：</p>
+
+<p>$$
+\text{CE}(p_{t})=-\alpha_{t}\text{log}(p_{t}). \tag{3}
+$$</p>
+
+<p>这种损失是对CE的简单扩展，我们认为这是我们提出的focal损失的实验基线。</p>
+
+<h3 id="3-2-focal-loss-definition">3.2. Focal Loss Definition</h3>
+
+<p>正如我们的实验所表明的那样，在密集型检测器训练过程中遇到的大量类不平衡压倒(overwhelm)CE损失，容易分类的负例包含了大部分损失并主导梯度。虽然$\alpha$平衡了positive/negative examples的重要性，但没有区分easy/hard examples。取而代之，我们建议调整损失函数以减小easy examples的权重，因此将训练集中在hard negatives。</p>
+
+<p>正式而言，我们建议为CE损失增加一个<strong>调节因子</strong>$(1-p_{t})^{\gamma}$，其中调焦参数(tunable focusing parameter)$\gamma\geq0$，我们将focal损失定义为：</p>
+
+<p>$$
+\text{FL}(p_{t})=-(1-p_{t})^{\gamma}\text{log}(p_{t}) \tag{4}
+$$</p>
+
+<blockquote>
+<p>上式的完整表达更容易理解：
+$$
+\text{FL}(p,y)=\left\{\begin{array}{l}
+{-(1-p)^{\gamma}\text{log}(p)} &amp; {\text{if }y=1} \<br />
+{-p^{\gamma}\text{log}(1-p)} &amp; {\text{otherwise}}
+\end{array}\right.
+$$</p>
+</blockquote>
+
+<p>Fig.1可视化了$\gamma\in[0,5]$的几个值对应的focal损失，我们注意到了focal损失的两个属性。<strong>1.</strong> 如果某个例被错误分类而且$p_{t}$很小，<strong>调节因子会接近1因而损失不受影响</strong>。因为$p_{t}\rarr1$时，调节因子会接近0，分类良好的例子的损失是低权重的。<strong>2.</strong> 调教参数$\gamma$平滑地调整easy examples权重减少的速率，当$\gamma=0$时，FL等价于CE，随着$\gamma$的增加，调节因子的影响会相应增加(我们发现$\gamma=2$在我们的实验中表现最好)。</p>
+
+<p>直观而言，调节因子减少了easy examples的损失贡献，并扩展了样例获得低损耗的范围。比如，$\gamma=2$时，$p_{t}=0.9$的样例的损失比CE低100倍，$p_{t}=0.968$的损失低1000倍，这反过来又增加了校正被错误分类的样例的重要性(对于$p_{t}\leq0.5$和$\gamma=2$其损失减小了4倍)。</p>
+
+<p>实际中我们使用focal损失的$\alpha$-balanced变种：</p>
+
+<p>$$
+\text{FL}(p_{t})=-\alpha_{t}(1-p_{t})^{\gamma}\text{log}(p_{t}). \tag{5}
+$$</p>
+
+<blockquote>
+<p>上式的完整表达更容易理解：
+$$
+\text{FL}(p,y)=\left\{\begin{array}{l}
+{-\alpha(1-p)^{\gamma}\text{log}(p)} &amp; {\text{if }y=1} \<br />
+{-(1-\alpha)p^{\gamma}\text{log}(1-p)} &amp; {\text{otherwise}}
+\end{array}\right.
+$$</p>
+</blockquote>
+
+<p>我们在实验中采用这种形式，因为它比non-$\alpha$-balanced形式产生略高的准确性。*最后，我们注意到损失层的实现，通过将用于计算$p$的sigmoid操作和损失计算相结合，会产生更大的数值稳定性*。</p>
+
+<p>虽然在我们的主要实验结果中，我们使用了上述focal损失定义，但是其精确形式并不重要。在附录中，我们考虑了focal损失的其他实例，并证明这些实例同样有效。</p>
+
+<h3 id="3-3-class-imbalance-and-model-initialization">3.3. Class Imbalance and Model Initialization</h3>
+
+<p>默认情况下，二分类模型为输出$y=-1 or 1$初始化相同的概率。在这种初始化条件下，面对类别不平衡，损失由于被较频繁的类别主导而在训练早期造成不稳定。为了解决此问题，我们针对模型中的稀有类别(前景)所估计的$p$值引入了&rdquo;先验&rdquo;的概念。我们用$\pi$表示先验并将其设置为使得模型为稀有类别样例估计的$p$很小，比如0.01。我们注意到这是模型初始化的挑战而不是损失函数的挑战，我们发现这可以提升严重类别不平衡情况下交叉熵损失和focal损失的训练稳定性。</p>
+
+<h3 id="3-4-class-imbalance-and-two-stage-detectors">3.4. Class Imbalance and Two-stage Detectors</h3>
+
+<p>两步检测器通常用交叉熵损失来训练，而不使用$\alpha$-balanced或我们提出的损失。相应地，他们使用两步机制解决类不平衡问题：<strong>1.</strong> 两步级联；<strong>2.</strong> 带偏向的小批次采样。第一个级联阶段是一个目标提议机制，它将接近无限的潜在目标位置减少到一两千。重要的是，所选择的提议不是随机的，而可能对应于真实的目标位置，这消除了绝大多数easy negatives。在训练第二阶段时，带偏向的采样通常用于构造小批次包，其包含例如1：3比例的正反样例，该比例类似于通过采样实现的隐含的α平衡因子。我们提出的focal损失旨在通过损失函数直接在单步检测系统中解决这些机制。</p>
+
+<h2 id="4-retinanet-detector">4. RetinaNet Detector</h2>
+
+<!-- RetinaNet是一个统一的网络，由骨干网络和两个特定任务的子网络组成。 -->
+
+<p>&hellip;</p>
+
+    </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">ling</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-10-20
+        
+    </span>
+  </p>
+  
+  
+</div>
+<footer class="post-footer">
+      <div class="post-tags">
+          <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">目标检测</a>
+          </div>
+      <nav class="post-nav">
+        
+        <a class="next" href="/post/mobilenet/">
+            <span class="next-text nav-default">MobileNet</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:371788386@qq.com" class="iconfont icon-email" title="email"></a>
+  <a href="https://imurphl.github.io/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2019
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">ling</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/dist/even.26188efa.min.js"></script>
+  <script type="text/javascript">
+    window.MathJax = {
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script async src="https://cdn.jsdelivr.net/npm/mathjax@2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"  integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>
